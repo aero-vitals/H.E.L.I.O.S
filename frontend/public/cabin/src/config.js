@@ -55,7 +55,7 @@ export const CONFIG = {
   scroll: { wheel: 0.00008, touch: 0.0012, damping: 0.12 },       // smooth, calibrated scroll feel (zero-jump)
   sway: { amp: 0.11, roll: 0.012 },                                // zero-g camera drift
   look: { mouseYaw: 0.2, mousePitch: 0.12, dragYaw: 0.9, dragPitch: 0.5 },
-  bloom: { strength: 0.25, radius: 0.32, threshold: 0.82 },
+  bloom: { strength: 0.18, radius: 0.28, threshold: 0.93 },
   crewDrift: 0.35,                                                 // astronaut idle drift speed
   crewScale: 7.6,                                                  // astronaut size (world units)
   dragThrow: 0.9,                                                  // inertia after releasing a dragged crew member

@@ -158,7 +158,18 @@ export class EVA {
         if (n.isMesh) {
           n.frustumCulled = false;
           n.castShadow = false;
-          (Array.isArray(n.material) ? n.material : [n.material]).forEach((mat) => { mat.envMapIntensity = 0.9; });
+          (Array.isArray(n.material) ? n.material : [n.material]).forEach((mat) => {
+            mat.envMapIntensity = 0.40;
+            if (mat.name === 'material_1') {
+              mat.color.setHex(0x0a101d);
+              mat.metalness = 0.96;
+              mat.roughness = 0.05;
+            } else {
+              mat.roughness = 0.70;
+              mat.metalness = 0.05;
+            }
+            mat.needsUpdate = true;
+          });
         }
       });
       if (src.animations && src.animations.length) {

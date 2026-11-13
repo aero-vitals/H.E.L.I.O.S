@@ -28,7 +28,7 @@ function loadMarsBaseModel(onProgress?: (pct: number) => void): Promise<THREE.Gr
         const scene = gltf.scene;
         scene.updateMatrixWorld(true);
 
-        // Convert KHR_materials_unlit to realistic Martian PBR materials
+        // Convert KHR_materials_unlit to realistic Martian PBR materials while preserving rich texture colors & soil hues
         scene.traverse((node) => {
           if ((node as THREE.Mesh).isMesh) {
             const mesh = node as THREE.Mesh;
@@ -36,22 +36,30 @@ function loadMarsBaseModel(onProgress?: (pct: number) => void): Promise<THREE.Gr
             mesh.receiveShadow = true;
 
             if (mesh.material) {
-              const origMat = mesh.material as THREE.MeshBasicMaterial;
-              const map = origMat.map;
-              if (map) {
-                map.colorSpace = THREE.SRGBColorSpace;
-                map.anisotropy = 8;
-                map.needsUpdate = true;
-              }
+              const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+              const newMats = mats.map((mat) => {
+                if (!mat) return mat;
+                const origMat = mat as THREE.MeshBasicMaterial;
+                const map = origMat.map;
+                if (map) {
+                  map.colorSpace = THREE.SRGBColorSpace;
+                  map.anisotropy = 8;
+                  map.needsUpdate = true;
+                }
 
-              // Standard PBR material responding naturally to Martian sun & ambient atmosphere
-              const stdMat = new THREE.MeshStandardMaterial({
-                map: map || null,
-                roughness: 0.72,
-                metalness: 0.16,
-                toneMapped: true,
+                // Preserve original base color or tint
+                const origColor = origMat.color ? origMat.color.clone() : new THREE.Color(0xffffff);
+
+                return new THREE.MeshStandardMaterial({
+                  map: map || null,
+                  color: origColor,
+                  roughness: 0.82,
+                  metalness: 0.08,
+                  toneMapped: true,
+                });
               });
-              mesh.material = stdMat;
+
+              mesh.material = Array.isArray(mesh.material) ? newMats : newMats[0];
             }
           }
         });
@@ -127,18 +135,18 @@ export const MarsSurfaceView3D = memo(function MarsSurfaceView3D({
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.18;
+    renderer.toneMappingExposure = 1.0;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     container.appendChild(renderer.domElement);
 
-    // 4. Martian Sunlight & Atmospheric Lighting
-    const hemiLight = new THREE.HemisphereLight(0xffbe88, 0x824422, 1.4);
+    // 4. Martian Sunlight & Atmospheric Lighting (calibrated to preserve warm ochre colors without overexposure)
+    const hemiLight = new THREE.HemisphereLight(0xd97736, 0x5a2d18, 0.65);
     scene.add(hemiLight);
 
-    const sunLight = new THREE.DirectionalLight(0xffedd2, 2.6);
+    const sunLight = new THREE.DirectionalLight(0xffeedd, 1.35);
     sunLight.position.set(120, 240, 160);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.width = 2048;
@@ -153,7 +161,7 @@ export const MarsSurfaceView3D = memo(function MarsSurfaceView3D({
     sunLight.shadow.bias = -0.0005;
     scene.add(sunLight);
 
-    const ambientFill = new THREE.AmbientLight(0xff9450, 0.45);
+    const ambientFill = new THREE.AmbientLight(0x9c411e, 0.25);
     scene.add(ambientFill);
 
     // 5. Airborne Martian Dust / Sand Particles

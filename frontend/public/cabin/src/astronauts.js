@@ -23,7 +23,25 @@ export class Crew {
     let mixer = null, animate = null, obj;
     if (src) {
       obj = SkeletonUtils.clone(src.scene);
-      obj.traverse((n) => { if (n.isMesh) { n.frustumCulled = false; n.castShadow = true; n.receiveShadow = true; (Array.isArray(n.material) ? n.material : [n.material]).forEach((m) => { m.envMapIntensity = 0.7; }); } });
+      obj.traverse((n) => {
+        if (n.isMesh) {
+          n.frustumCulled = false;
+          n.castShadow = true;
+          n.receiveShadow = true;
+          (Array.isArray(n.material) ? n.material : [n.material]).forEach((m) => {
+            m.envMapIntensity = 0.35;
+            if (m.name === 'material_1') {
+              m.color.setHex(0x0a101d);
+              m.metalness = 0.96;
+              m.roughness = 0.05;
+            } else {
+              m.roughness = 0.70;
+              m.metalness = 0.05;
+            }
+            m.needsUpdate = true;
+          });
+        }
+      });
       if (src.animations && src.animations.length) {
         mixer = new THREE.AnimationMixer(obj);
         const a = mixer.clipAction(src.animations[0]); a.play(); a.time = Math.random() * src.animations[0].duration; mixer.timeScale = rand(0.8, 1.1);

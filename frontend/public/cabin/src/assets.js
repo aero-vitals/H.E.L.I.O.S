@@ -39,16 +39,55 @@ async function fixSpecGloss(gltf) {
     if (!o.isMesh) return;
     (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => {
       const assoc = parser.associations && parser.associations.get(m);
-      if (!assoc || assoc.materials === undefined) return;
-      const def = json.materials && json.materials[assoc.materials];
+      const matIndex = assoc && assoc.materials !== undefined
+        ? assoc.materials
+        : (json.materials ? json.materials.findIndex((jm) => jm.name === m.name) : -1);
+      if (matIndex === -1) return;
+      const def = json.materials && json.materials[matIndex];
       const ext = def && def.extensions && def.extensions.KHR_materials_pbrSpecularGlossiness;
-      if (!ext || m.map) return;
-      if (ext.diffuseTexture) {
+      if (!ext) return;
+
+      // Special handling for astronaut helmet visor (material_1)
+      if (m.name === 'material_1' || def.name === 'material_1') {
+        m.color.setHex(0x0f172a);
+        m.metalness = 0.96;
+        m.roughness = 0.06;
+        if (m.clearcoat !== undefined) {
+          m.clearcoat = 1.0;
+          m.clearcoatRoughness = 0.02;
+        }
+        m.needsUpdate = true;
+        return;
+      }
+
+      if (ext.diffuseTexture && !m.map) {
         jobs.push(parser.getDependency('texture', ext.diffuseTexture.index).then((t) => {
-          t.colorSpace = THREE.SRGBColorSpace; m.map = t; m.color.set(1, 1, 1); m.metalness = 0; m.roughness = 0.62; m.needsUpdate = true;
+          t.colorSpace = THREE.SRGBColorSpace;
+          m.map = t;
+          m.color.set(1, 1, 1);
+          m.metalness = 0.08;
+          m.roughness = 0.65;
+          m.needsUpdate = true;
         }));
       } else if (ext.diffuseFactor) {
-        m.color.setRGB(ext.diffuseFactor[0], ext.diffuseFactor[1], ext.diffuseFactor[2]); m.metalness = 0; m.roughness = 0.62; m.needsUpdate = true;
+        m.color.setRGB(ext.diffuseFactor[0], ext.diffuseFactor[1], ext.diffuseFactor[2]);
+        m.metalness = 0.08;
+        m.roughness = 0.65;
+        m.needsUpdate = true;
+      }
+
+      if (def.normalTexture && !m.normalMap) {
+        jobs.push(parser.getDependency('texture', def.normalTexture.index).then((t) => {
+          m.normalMap = t;
+          m.needsUpdate = true;
+        }));
+      }
+      if (def.occlusionTexture && !m.aoMap) {
+        jobs.push(parser.getDependency('texture', def.occlusionTexture.index).then((t) => {
+          m.aoMap = t;
+          m.aoMapIntensity = 0.9;
+          m.needsUpdate = true;
+        }));
       }
     });
   });

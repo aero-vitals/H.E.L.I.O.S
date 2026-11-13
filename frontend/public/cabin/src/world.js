@@ -311,14 +311,14 @@ export class World {
   /* ----------------------------- lights ----------------------------- */
   buildLights() {
     const s = this.scene;
-    this.sun = new THREE.DirectionalLight(0xfff4e6, 3.8);
+    this.sun = new THREE.DirectionalLight(0xfff4e6, 1.8);
     this.sun.castShadow = false;
     this.sun.shadow.mapSize.set(1024, 1024);
     const sc = this.sun.shadow.camera; sc.left = -42; sc.right = 42; sc.top = 42; sc.bottom = -42; sc.near = 5; sc.far = 340;
     this.sun.shadow.bias = -0.0004; this.sun.shadow.normalBias = 0.04;
     s.add(this.sun, this.sun.target);
-    this.hemi = new THREE.HemisphereLight(0xbce0ff, 0x222834, 0.28); s.add(this.hemi);
-    this.fill = new THREE.AmbientLight(0x4a6582, 0.15); s.add(this.fill);
+    this.hemi = new THREE.HemisphereLight(0xbce0ff, 0x111622, 0.22); s.add(this.hemi);
+    this.fill = new THREE.AmbientLight(0x3a4b60, 0.12); s.add(this.fill);
     this.accents = []; // filled by buildCabin (module lights)
   }
 
@@ -584,50 +584,42 @@ export class World {
         o.receiveShadow = true;
         const ms = Array.isArray(o.material) ? o.material : [o.material];
         ms.forEach((m) => {
-          m.envMapIntensity = 0.90;
+          m.envMapIntensity = 0.50;
           const matName = (m.name || o.name || '').toLowerCase();
 
-          // 1. Solar array wings & photovoltaic cells (preserve authentic deep blue & gold grid)
+          // 1. Solar array wings & photovoltaic cells (authentic deep cobalt blue & solar cells)
           if (matName.includes('solar') || matName.includes('panel') || matName.includes('array')) {
-            m.metalness = 0.10;
-            m.roughness = 0.30;
+            m.metalness = 0.50;
+            m.roughness = 0.35;
             m.side = THREE.DoubleSide;
             if (m.emissive) {
-              m.emissive.setRGB(0.01, 0.03, 0.06);
-              m.emissiveIntensity = 0.20;
+              m.emissive.setRGB(0.005, 0.015, 0.035);
+              m.emissiveIntensity = 0.15;
             }
           }
           // 2. Gold / copper MLI thermal insulation foil
           else if (matName.includes('gold') || matName.includes('ins') || matName.includes('foil')) {
-            m.metalness = 0.85;
-            m.roughness = 0.25;
+            m.metalness = 0.88;
+            m.roughness = 0.22;
             if (m.emissive) {
-              m.emissive.setRGB(0.12, 0.08, 0.02);
-              m.emissiveIntensity = 0.25;
+              m.emissive.setRGB(0.08, 0.05, 0.01);
+              m.emissiveIntensity = 0.15;
             }
           }
           // 3. Station pressurized modules (anodized aluminum & white beta-cloth blankets)
           else {
-            if (m.roughness !== undefined) m.roughness = THREE.MathUtils.clamp(m.roughness, 0.45, 0.70);
-            if (m.metalness !== undefined) m.metalness = THREE.MathUtils.clamp(m.metalness, 0.08, 0.35);
+            if (m.roughness !== undefined) m.roughness = THREE.MathUtils.clamp(m.roughness, 0.55, 0.80);
+            if (m.metalness !== undefined) m.metalness = THREE.MathUtils.clamp(m.metalness, 0.05, 0.25);
             if (m.emissive) {
-              // Minimal deep-space shadow fill so dark side isn't pitch black, without bleaching daylight colors
-              m.emissive.setRGB(0.03, 0.04, 0.06);
-              m.emissiveIntensity = 0.15;
+              m.emissive.setRGB(0.01, 0.012, 0.018);
+              m.emissiveIntensity = 0.08;
             }
           }
 
-          // Ensure authentic sRGB color reproduction & correct inverted texture vertical orientation on ISS modules & flags (fixes upside down NASDA, ESA, USA, Unity & flags)
+          // Ensure authentic sRGB color reproduction
           if (m.map) {
             m.map.colorSpace = THREE.SRGBColorSpace;
-            m.map.wrapS = THREE.RepeatWrapping;
-            m.map.wrapT = THREE.RepeatWrapping;
-            m.map.repeat.set(1, -1);
-            m.map.offset.set(0, 1);
-            m.map.anisotropy = 16;
-            m.map.minFilter = THREE.LinearMipmapLinearFilter;
-            m.map.magFilter = THREE.LinearFilter;
-            m.map.generateMipmaps = true;
+            m.map.anisotropy = 8;
             m.map.needsUpdate = true;
           }
           m.needsUpdate = true;
@@ -969,7 +961,7 @@ export class World {
     this.rws = rws;
 
     // Ambient monitor telemetry illumination for the Robotic Workstation
-    const rwsGlow = new THREE.PointLight(0x38bdf8, 85, 24, 1.8);
+    const rwsGlow = new THREE.PointLight(0x38bdf8, 28, 24, 1.8);
     rwsGlow.position.set(0, 9.2, -58.5);
     cab.add(rwsGlow);
 
@@ -989,7 +981,7 @@ export class World {
     this.msgRacks = [msgLeft, msgRight];
 
     // soft screen glow over the forward consoles
-    const cg = new THREE.PointLight(0x4fc8ff, 70, 26, 1.8); cg.position.set(0, 9, -38); cab.add(cg);
+    const cg = new THREE.PointLight(0x4fc8ff, 24, 26, 1.8); cg.position.set(0, 9, -38); cab.add(cg);
 
     // NASA Retro Computer Consoles along the corridor sides (blended naturally with ISS lighting)
     const nasaConsoleSrc = this.A.nasaConsole || this.A.console;
@@ -1372,14 +1364,14 @@ export class World {
     corridorGroup.add(entranceCap);
 
     // Balanced Laboratory Lighting (crisp contrast & realistic zero-lag shading)
-    const amb = new THREE.AmbientLight(0xffffff, 1.2);
+    const amb = new THREE.AmbientLight(0xffffff, 0.35);
     corridorGroup.add(amb);
-    const hemi = new THREE.HemisphereLight(0xf8fafc, 0x1e293b, 1.1);
+    const hemi = new THREE.HemisphereLight(0xf8fafc, 0x1e293b, 0.35);
     corridorGroup.add(hemi);
 
-    const dl1 = new THREE.PointLight(0xe0f2fe, 1.4, 8);
+    const dl1 = new THREE.PointLight(0xe0f2fe, 0.75, 8);
     dl1.position.set(cx, cy + 1.0, -2.5);
-    const dl2 = new THREE.PointLight(0xe0f2fe, 1.4, 8);
+    const dl2 = new THREE.PointLight(0xe0f2fe, 0.75, 8);
     dl2.position.set(cx, cy + 1.0, -7.5);
     corridorGroup.add(dl1, dl2);
 
@@ -1625,7 +1617,7 @@ export class World {
     this.sun.target.position.copy(target);
     this.sun.position.copy(sunPos);
     this.sun.castShadow = phase === 'cabin';
-    this.sun.intensity = phase === 'cabin' ? 2.4 : 2.2;
+    this.sun.intensity = phase === 'cabin' ? 1.0 : 1.6;
     this.sun.color.set(phase === 'cabin' ? 0xffe6c4 : 0xfff3e0);
 
     // Old Sun flare (the beloved Sun in the sky)
@@ -1642,8 +1634,8 @@ export class World {
     if (this.atmUniforms) {
       this.atmUniforms.uSunDir.value.copy(toSun);
     }
-    this.hemi.intensity = phase === 'cabin' ? 0.5 : 0.08;
-    this.fill.intensity = phase === 'cabin' ? 0.45 : 0.0;
+    this.hemi.intensity = phase === 'cabin' ? 0.25 : 0.08;
+    this.fill.intensity = phase === 'cabin' ? 0.20 : 0.0;
     this.accents.forEach((l) => { if (phase === 'cabin') { if (!l.parent) this.cabin.add(l); } else if (l.parent) l.parent.remove(l); });
     this.scene.environment = phase === 'cabin' || phase === 'corridor' ? this.envTex : null;
     if (this.issSpin) {
@@ -1809,12 +1801,12 @@ export class World {
       const dayFactor = THREE.MathUtils.smoothstep(sunElevation, -0.12, 0.22);
 
       if (this.phase === 'cabin' && !ext) {
-        this.sun.intensity = THREE.MathUtils.lerp(0.12, 2.4, dayFactor);
+        this.sun.intensity = THREE.MathUtils.lerp(0.10, 1.1, dayFactor);
         this.flare.scale.setScalar(THREE.MathUtils.smoothstep(sunElevation, -0.05, 0.15));
         this.flare.visible = sunElevation > -0.08;
       } else {
-        this.sun.intensity = THREE.MathUtils.lerp(0.85, 3.4, dayFactor);
-        this.flare.scale.setScalar(1.0);
+        this.sun.intensity = THREE.MathUtils.lerp(0.50, 1.7, dayFactor);
+        this.flare.scale.setScalar(0.85);
         this.flare.visible = true;
       }
 

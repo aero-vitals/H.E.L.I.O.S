@@ -35,7 +35,7 @@ async function boot() {
   const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true, logarithmicDepthBuffer: false, powerPreference: 'high-performance' });
   let pr = Math.min(window.devicePixelRatio || 1, 1.25);
   renderer.setPixelRatio(pr); renderer.setSize(innerWidth, innerHeight);
-  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 0.98;
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap;
   stage.appendChild(renderer.domElement);
   const labels = new CSS2DRenderer(); labels.setSize(innerWidth, innerHeight);

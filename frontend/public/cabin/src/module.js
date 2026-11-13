@@ -265,7 +265,7 @@ export function buildModule(opts = {}) {
 
   /* ---------- point lights (kept few: forward renderer) ---------- */
   const lights = [];
-  [40, 22, 4, -14, -30].forEach((z) => { const l = new THREE.PointLight(0xfff0dc, 120, 52, 1.5); l.position.set(0, CEIL - 3, z); lights.push(l); });
-  const cock = new THREE.PointLight(0x7fdcff, 110, 48, 1.6); cock.position.set(0, 14, -66); lights.push(cock);
+  [40, 22, 4, -14, -30].forEach((z) => { const l = new THREE.PointLight(0xfff0dc, 28, 52, 1.5); l.position.set(0, CEIL - 3, z); lights.push(l); });
+  const cock = new THREE.PointLight(0x7fdcff, 25, 48, 1.6); cock.position.set(0, 14, -66); lights.push(cock);
   return { group, lights };
 }
