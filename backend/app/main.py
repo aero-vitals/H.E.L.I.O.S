@@ -581,7 +581,7 @@ if os.path.exists(FRONTEND_DIST):
 
         if os.path.isfile(target_path):
             resp = FileResponse(target_path)
-            if target_path.endswith((".html", ".js", ".json")):
+            if target_path.endswith((".html", ".js", ".json", ".glb", ".css")):
                 resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
             return resp
         

@@ -120,7 +120,7 @@ export async function loadAssets(onProgress, onLog) {
           }
         }, 30000);
         loader.load(
-          CONFIG.modelDir + encodeURIComponent(file),
+          CONFIG.modelDir + encodeURIComponent(file) + '?v=4.5.0',
           (data) => {
             if (!done) { done = true; clearTimeout(timer); res(data); }
           },

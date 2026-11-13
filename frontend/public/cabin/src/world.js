@@ -770,7 +770,7 @@ export class World {
     // Real Textures from folder
     // Load SpaceX Crew Dragon GLB
     const gltfLoader = new GLTFLoader();
-    gltfLoader.load('/models/spacex/space_x_crew_dragon.glb', (gltf) => {
+    gltfLoader.load('/models/spacex/space_x_crew_dragon.glb?v=4.5.0', (gltf) => {
       const model = gltf.scene;
       model.traverse((o) => {
         if (o.isMesh) {

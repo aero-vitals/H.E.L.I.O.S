@@ -23,7 +23,7 @@ function loadMarsBaseModel(onProgress?: (pct: number) => void): Promise<THREE.Gr
   const loader = new GLTFLoader();
   modelLoadingPromise = new Promise<THREE.Group>((resolve, reject) => {
     loader.load(
-      '/models/mars_one_mission_-_base.glb',
+      '/models/mars_one_mission_-_base.glb?v=4.5.0',
       (gltf) => {
         const scene = gltf.scene;
         scene.updateMatrixWorld(true);
