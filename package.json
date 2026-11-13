@@ -1,0 +1,23 @@
+{
+  "name": "helios-spaceapps-challenge",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "vite frontend",
+    "build": "vite build frontend",
+    "lint": "vite build frontend",
+    "preview": "vite preview frontend"
+  },
+  "optionalDependencies": {
+    "@rolldown/binding-linux-x64-gnu": "^1.2.15",
+    "@rolldown/binding-win32-x64-msvc": "^1.2.15",
+    "lightningcss-linux-x64-gnu": "^1.33.0"
+  },
+  "dependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  }
+}
