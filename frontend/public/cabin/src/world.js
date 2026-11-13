@@ -311,14 +311,14 @@ export class World {
   /* ----------------------------- lights ----------------------------- */
   buildLights() {
     const s = this.scene;
-    this.sun = new THREE.DirectionalLight(0xfff4e6, 1.8);
+    this.sun = new THREE.DirectionalLight(0xfff4e6, 1.25);
     this.sun.castShadow = false;
     this.sun.shadow.mapSize.set(1024, 1024);
     const sc = this.sun.shadow.camera; sc.left = -42; sc.right = 42; sc.top = 42; sc.bottom = -42; sc.near = 5; sc.far = 340;
     this.sun.shadow.bias = -0.0004; this.sun.shadow.normalBias = 0.04;
     s.add(this.sun, this.sun.target);
     this.hemi = new THREE.HemisphereLight(0xbce0ff, 0x111622, 0.22); s.add(this.hemi);
-    this.fill = new THREE.AmbientLight(0x3a4b60, 0.12); s.add(this.fill);
+    this.fill = new THREE.AmbientLight(0x3a4b60, 0.15); s.add(this.fill);
     this.accents = []; // filled by buildCabin (module lights)
   }
 
@@ -780,8 +780,27 @@ export class World {
           const mats = Array.isArray(o.material) ? o.material : [o.material];
           mats.forEach((m) => {
             const name = (m.name || '').toLowerCase();
-            if (name === 'wglass') {
-              m.color.setHex(0x080c14); // Deep tinted astronaut reflective visor glass
+            const isDecal = name.includes('logo') || name.includes('flag') || name.includes('sign') ||
+              name === 'material_0' || name === 'material_1' || name === 'material_2' || name === 'material_3' ||
+              (m.map && name !== 'white' && name !== 'black');
+
+            if (isDecal) {
+              m.transparent = true;
+              m.opacity = 1.0;
+              m.depthWrite = false;
+              m.depthTest = true;
+              m.polygonOffset = true;
+              m.polygonOffsetFactor = -4;
+              m.polygonOffsetUnits = -4;
+              m.roughness = 0.30;
+              m.metalness = 0.05;
+              if (m.map) {
+                m.map.colorSpace = THREE.SRGBColorSpace;
+                m.map.needsUpdate = true;
+              }
+              o.renderOrder = 8;
+            } else if (name === 'wglass') {
+              m.color.setHex(0x0a101d); // Deep tinted astronaut reflective visor glass
               m.roughness = 0.04;
               m.metalness = 0.98;
               m.transparent = false;
@@ -800,34 +819,38 @@ export class World {
               m.depthWrite = true;
               m.depthTest = true;
               if (name === 'white') {
-                m.color.setHex(0xfbfcfd);
-                m.roughness = 0.22;
+                m.color.setHex(0xdce0e4); // Clean aerospace matte white (PICA-X & thermal blankets, avoids blinding burnout)
+                m.roughness = 0.45;
                 m.metalness = 0.08;
                 if (m.clearcoat !== undefined) {
-                  m.clearcoat = 0.85;
-                  m.clearcoatRoughness = 0.06;
+                  m.clearcoat = 0.4;
+                  m.clearcoatRoughness = 0.15;
                 }
               } else if (name === 'black') {
                 m.color.setHex(0x131518);
-                m.roughness = 0.45;
-                m.metalness = 0.18;
+                m.roughness = 0.55;
+                m.metalness = 0.15;
               } else if (name === 'material_4') {
-                m.color.setHex(0x1e2126);
-                m.roughness = 0.35;
-                m.metalness = 0.65;
-              } else if (m.map) {
-                m.roughness = 0.25;
-                m.metalness = 0.05;
+                m.color.setHex(0x20242b);
+                m.roughness = 0.40;
+                m.metalness = 0.60;
+              } else {
+                m.roughness = 0.40;
+                m.metalness = 0.15;
               }
-              m.needsUpdate = true;
+              if (m.map) {
+                m.map.colorSpace = THREE.SRGBColorSpace;
+                m.map.needsUpdate = true;
+              }
             }
+            m.needsUpdate = true;
           });
         }
       });
       model.position.set(-1.265, -1.0173, -0.0340);
       dragonInner.add(model);
       this.dragonModel = model;
-      this.dragonNose = model.getObjectByName('_2') || model.getObjectByName('Object_13');
+      this.dragonNose = model.getObjectByName('_2');
       this.createDragonCockpit(model);
       if (this.phase === 'cabin' && this.dragonCrew) {
         this.dragonCrew.visible = false;
@@ -1617,7 +1640,7 @@ export class World {
     this.sun.target.position.copy(target);
     this.sun.position.copy(sunPos);
     this.sun.castShadow = phase === 'cabin';
-    this.sun.intensity = phase === 'cabin' ? 1.0 : 1.6;
+    this.sun.intensity = phase === 'cabin' ? 0.85 : 1.25;
     this.sun.color.set(phase === 'cabin' ? 0xffe6c4 : 0xfff3e0);
 
     // Old Sun flare (the beloved Sun in the sky)

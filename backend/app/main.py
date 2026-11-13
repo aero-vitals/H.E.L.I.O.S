@@ -54,7 +54,7 @@ async def lifespan(app: FastAPI):
     # Auto-initiate local Ollama AI model in background
     if ollama_client:
         asyncio.create_task(ollama_client.initiate_model())
-    print("[+] NASA Astronaut Health Sentry & AI Surgeon Engine Online (10 Hz Stream Active)")
+    print("[+] NASA Astronaut Health Sentry & Helix-Ai Analyst Engine Online (10 Hz Stream Active)")
 
     yield
 
@@ -67,8 +67,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="NASA Astronaut Health Intelligence System (AI-Surgeon-Sentry)",
-    description="Autonomous, offline-first deep-space clinical decision-support and telemetry sentry.",
+    title="NASA Astronaut Health Intelligence System (Helix-Ai-Analyst-Sentry)",
+    description="Autonomous, offline-first deep-space health decision-support and telemetry sentry.",
     version="1.0.0",
     lifespan=lifespan
 )
@@ -439,7 +439,7 @@ async def get_voice_greeting(astronaut_id: str) -> Dict[str, Any]:
 
 @app.post("/api/ai/triage/{astronaut_id}")
 async def post_ai_triage(astronaut_id: str) -> Dict[str, Any]:
-    """Triggers an on-demand comprehensive clinical triage evaluation for an astronaut."""
+    """Triggers an on-demand comprehensive health triage evaluation for an astronaut."""
     if not baseline_mgr:
         raise HTTPException(status_code=500, detail="Telemetry system uninitialized.")
 
@@ -455,7 +455,7 @@ async def post_ai_triage(astronaut_id: str) -> Dict[str, Any]:
     env = baseline_mgr.environmental_baselines
 
     severity = recent.get("evaluated_severity", "NOMINAL")
-    reason = "On-demand clinical diagnostic scan"
+    reason = "On-demand physiological diagnostic scan"
 
     triage_record = DecisionEngine.structure_triage_record(
         astronaut_id=resolved_id,
@@ -482,7 +482,7 @@ async def post_ai_triage(astronaut_id: str) -> Dict[str, Any]:
 
 @app.post("/api/ai/joint-triage")
 async def post_ai_joint_triage(request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-    """Generates a joint clinical voice warning addressing two crew members naturally by name and broadcasts to HUD."""
+    """Generates a joint health voice warning addressing two crew members naturally by name and broadcasts to HUD."""
     req = request or {}
     id1 = resolve_astronaut_id(req.get("astronaut_id_1", "AST-01_COMMANDER"))
     id2 = resolve_astronaut_id(req.get("astronaut_id_2", "AST-02_PILOT"))
@@ -580,10 +580,15 @@ if os.path.exists(FRONTEND_DIST):
             raise HTTPException(status_code=403, detail="Access denied: Directory traversal violation")
 
         if os.path.isfile(target_path):
-            return FileResponse(target_path)
+            resp = FileResponse(target_path)
+            if target_path.endswith((".html", ".js", ".json")):
+                resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+            return resp
         
         index_file = os.path.join(base_dist, "index.html")
         if os.path.exists(index_file):
-            return FileResponse(index_file)
+            resp = FileResponse(index_file)
+            resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+            return resp
         raise HTTPException(status_code=404, detail="Frontend build index.html not found")
 

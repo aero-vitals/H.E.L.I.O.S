@@ -137,7 +137,7 @@ export const CREW = [
     pos: V(6, 12, -33), yaw: -1.2, flip: false,
   },
   {
-    id: 'med', slug: 'AST-03_MEDICAL',   call: 'MED', name: 'Dr. Sian', role: 'Chief Medical Officer',
+    id: 'med', slug: 'AST-03_MEDICAL',   call: 'MED', name: 'Dr. Sian', role: 'Chief Health Officer',
     match: ['medical', 'med', 'doctor', 'ast-03', 'c003', 'ast-03_medical', 'sian'],
     hr: 66, spo2: 98.0, resp: 14, ready: 90, off: false,
     pos: V(7, 8, 6),  yaw: -2.2, flip: false,
