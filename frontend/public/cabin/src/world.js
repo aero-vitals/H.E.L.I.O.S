@@ -794,6 +794,7 @@ export class World {
               m.polygonOffsetUnits = -4;
               m.roughness = 0.30;
               m.metalness = 0.05;
+              m.color.setHex(0xffffff);
               if (m.map) {
                 m.map.colorSpace = THREE.SRGBColorSpace;
                 m.map.needsUpdate = true;
@@ -969,7 +970,20 @@ export class World {
       const proto = this.A.console ? SkeletonUtils.clone(this.A.console.scene) : makeConsole();
       const o = normalize(proto, { size: c.width, by: 'width', pivot: 'bottom' });
       o.position.copy(c.pos); o.rotation.y = c.rotY;
-      o.traverse((n) => { if (n.isMesh) { n.castShadow = n.receiveShadow = true; (Array.isArray(n.material) ? n.material : [n.material]).forEach((m) => { m.envMapIntensity = 0.8; if (m.emissive && m.emissiveMap) m.emissiveIntensity = 1.6; }); } });
+      o.traverse((n) => {
+        if (n.isMesh) {
+          n.castShadow = n.receiveShadow = true;
+          (Array.isArray(n.material) ? n.material : [n.material]).forEach((m) => {
+            m.envMapIntensity = 0.5;
+            m.color.setHex(0xffffff);
+            if (m.map) {
+              m.map.colorSpace = THREE.SRGBColorSpace;
+              m.map.needsUpdate = true;
+            }
+            if (m.emissive && m.emissiveMap) m.emissiveIntensity = 0.8;
+          });
+        }
+      });
       cab.add(o);
       return o;
     });
@@ -984,7 +998,7 @@ export class World {
     this.rws = rws;
 
     // Ambient monitor telemetry illumination for the Robotic Workstation
-    const rwsGlow = new THREE.PointLight(0x38bdf8, 28, 24, 1.8);
+    const rwsGlow = new THREE.PointLight(0x38bdf8, 3.2, 24, 1.8);
     rwsGlow.position.set(0, 9.2, -58.5);
     cab.add(rwsGlow);
 
@@ -1004,7 +1018,7 @@ export class World {
     this.msgRacks = [msgLeft, msgRight];
 
     // soft screen glow over the forward consoles
-    const cg = new THREE.PointLight(0x4fc8ff, 24, 26, 1.8); cg.position.set(0, 9, -38); cab.add(cg);
+    const cg = new THREE.PointLight(0x4fc8ff, 2.4, 26, 1.8); cg.position.set(0, 9, -38); cab.add(cg);
 
     // NASA Retro Computer Consoles along the corridor sides (blended naturally with ISS lighting)
     const nasaConsoleSrc = this.A.nasaConsole || this.A.console;
@@ -1029,19 +1043,25 @@ export class World {
             n.castShadow = true;
             n.receiveShadow = true;
             n.material = n.material.clone();
-            n.material.envMapIntensity = 1.0;
-            n.material.roughness = 0.45;
-            n.material.metalness = 0.25;
-            if (n.material.emissive) {
-              n.material.emissive.setHex(0x1a382c);
-              n.material.emissiveIntensity = 0.8;
+            n.material.envMapIntensity = 0.5;
+            n.material.roughness = 0.55;
+            n.material.metalness = 0.20;
+            n.material.color.setHex(0xffffff);
+            if (n.material.map) {
+              n.material.map.colorSpace = THREE.SRGBColorSpace;
+              n.material.map.needsUpdate = true;
+            }
+            if (n.material.emissive && n.material.emissiveMap) {
+              n.material.emissiveIntensity = 0.5;
+            } else if (n.material.emissive) {
+              n.material.emissive.setHex(0x000000);
             }
           }
         });
         cab.add(nc);
 
         // Retro CRT Phosphor Green/Cyan Terminal Glow
-        const scrGlow = new THREE.PointLight(0x40ffbb, 38, 16, 1.8);
+        const scrGlow = new THREE.PointLight(0x40ffbb, 2.8, 16, 1.8);
         const fwdOffset = new THREE.Vector3(0, 0, 1.6).applyAxisAngle(new THREE.Vector3(0, 1, 0), cfg.rotY);
         scrGlow.position.copy(cfg.pos).add(new THREE.Vector3(0, 3.8, 0)).add(fwdOffset);
         cab.add(scrGlow);

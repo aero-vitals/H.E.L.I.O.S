@@ -29,14 +29,24 @@ export class Crew {
           n.castShadow = true;
           n.receiveShadow = true;
           (Array.isArray(n.material) ? n.material : [n.material]).forEach((m) => {
-            m.envMapIntensity = 0.35;
+            m.envMapIntensity = 0.40;
             if (m.name === 'material_1') {
               m.color.setHex(0x0a101d);
-              m.metalness = 0.96;
-              m.roughness = 0.05;
+              m.metalness = 0.98;
+              m.roughness = 0.04;
+              if (m.clearcoat !== undefined) {
+                m.clearcoat = 1.0;
+                m.clearcoatRoughness = 0.02;
+              }
             } else {
-              m.roughness = 0.70;
+              m.color.setHex(0xffffff);
+              m.roughness = 0.65;
               m.metalness = 0.05;
+            }
+            if (m.map) {
+              m.map.colorSpace = THREE.SRGBColorSpace;
+              m.map.anisotropy = 8;
+              m.map.needsUpdate = true;
             }
             m.needsUpdate = true;
           });

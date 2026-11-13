@@ -162,11 +162,21 @@ export class EVA {
             mat.envMapIntensity = 0.40;
             if (mat.name === 'material_1') {
               mat.color.setHex(0x0a101d);
-              mat.metalness = 0.96;
-              mat.roughness = 0.05;
+              mat.metalness = 0.98;
+              mat.roughness = 0.04;
+              if (mat.clearcoat !== undefined) {
+                mat.clearcoat = 1.0;
+                mat.clearcoatRoughness = 0.02;
+              }
             } else {
-              mat.roughness = 0.70;
+              mat.color.setHex(0xffffff);
+              mat.roughness = 0.65;
               mat.metalness = 0.05;
+            }
+            if (mat.map) {
+              mat.map.colorSpace = THREE.SRGBColorSpace;
+              mat.map.anisotropy = 8;
+              mat.map.needsUpdate = true;
             }
             mat.needsUpdate = true;
           });

@@ -90,7 +90,7 @@ export const Cabin3DView: React.FC<Cabin3DViewProps> = ({
     >
       <iframe
         ref={iframeRef}
-        src="/cabin/index.html?v=4.4.0"
+        src="/cabin/index.html?v=4.5.0"
         title="HELIOS 3D CABIN"
         style={{
           width: '100%',
