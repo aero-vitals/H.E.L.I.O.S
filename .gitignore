@@ -56,3 +56,6 @@ Thumbs.db
 
 # ── AGY / IDE internals ──────────────────────────────
 .agents/
+
+# ── Local Trash Archive ──────────────────────────────
+Trash/
