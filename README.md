@@ -74,7 +74,7 @@
     </td>
     <td width="50%" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 10px; padding: 18px; vertical-align: top;">
       <h3 style="color: #10b981; margin-top: 0;">
-        <img src="assets/icons/shield-check.svg" width="20" height="20" align="center" alt="Solution" /> 2. The Solution: An AI Doctor Inside the Spaceship
+        <img src="assets/icons/shield-check.svg" width="20" height="20" align="center" alt="Solution" /> 2. The Solution: An AI Analyst Inside the Spaceship
       </h3>
       <p style="color: #cbd5e1; line-height: 1.6;">
         <b>HELIOS is powered by Helix-Ai Analyst -an autonomous health sentry built directly into the spacecraft.</b>
